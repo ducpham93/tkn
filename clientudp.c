@@ -26,14 +26,14 @@ int main(int argc, char *argv[])
 	char buf[MAXDATASIZE];
 	int numbytes;
 	int receive;
-	if (argc != 4) {
-		fprintf(stderr,"usage: clientudp hostname message port\n");
+	if (argc != 3) {
+		fprintf(stderr,"usage: clientudp hostname port\n");
 		exit(1);
 	}
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_DGRAM;
-	if ((rv = getaddrinfo(argv[1], argv[3], &hints, &servinfo)) != 0) {
+	if ((rv = getaddrinfo(argv[1], argv[2], &hints, &servinfo)) != 0) {
 		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
 		return 1;
 	}
@@ -50,20 +50,19 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "clientudp: failed to create socket\n");
 		return 2;
 	}
-	if ((numbytes = sendto(sockfd, argv[2], strlen(argv[2]), 0,
+	if ((numbytes = sendto(sockfd, "hi", strlen("hi"), 0,
 		p->ai_addr, p->ai_addrlen)) == -1) {
 		perror("clientudp: sendto");
 		exit(1);
 	}
-	freeaddrinfo(servinfo);
-	
 	if ((receive = recvfrom(sockfd, buf, MAXDATASIZE-1, 0,
 		p->ai_addr, &p->ai_addrlen)) == -1) {
 		perror("clientudp: receive from");
 		exit(1);
 	}
+	freeaddrinfo(servinfo);
 	buf[receive] = '\0';
-	printf("clientudp: sent %d bytes to %s\n", numbytes, argv[1]);
+	//printf("clientudp: sent %d bytes to %s\n", numbytes, argv[1]);
 	printf("%s\n",buf);
 	close(sockfd);
 	
@@ -73,7 +72,7 @@ int main(int argc, char *argv[])
 	double accum = ( requestEnd.tv_sec - requestStart.tv_sec )
 	+ ( requestEnd.tv_nsec - requestStart.tv_nsec )
 	/ BILLION;
-	printf( "Time measured: %lf s\n", accum);
+	printf( "Time measured: %lf ms\n", accum*1000);
 	
 	return 0;
 }

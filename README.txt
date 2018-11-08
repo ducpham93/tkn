@@ -1,0 +1,2 @@
+Die gemessene Zeit für den Streamclient beträgt im Durchschnitt ca. 280 ms, während der Datagramclient im Schnitt nach etwa 150 ms, also etwa der Hälfte der Zeit, fertig war.
+Der Hauptgrund für diesen Zeitunterschied liegt darin, dass für den Streamclient die Verbindung zunächst aufgebaut werden muss, bevor Daten übertragen werden können, während der Datagramclient die Daten direkt losschickt.

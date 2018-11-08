@@ -13,6 +13,12 @@
 #define MAXDATASIZE 100000 // max number of bytes we can get at once 
 // get sockaddr, IPv4 or IPv6:
 
+
+#define BILLION  1E9;
+
+// Calculate time taken by a request
+struct timespec requestStart, requestEnd;
+
 void *get_in_addr(struct sockaddr *sa)
 {
     if (sa->sa_family == AF_INET) {
@@ -22,6 +28,7 @@ void *get_in_addr(struct sockaddr *sa)
 }
 int main(int argc, char *argv[])
 {
+	clock_gettime(CLOCK_REALTIME, &requestStart);
     int sockfd, numbytes;  
     char buf[MAXDATASIZE];
     struct addrinfo hints, *servinfo, *p;
@@ -66,8 +73,16 @@ int main(int argc, char *argv[])
     }
     buf[numbytes] = '\0';
 	//printf("numbytes: %d\n", numbytes);
-    printf("%s",buf);
+    printf("%s\n",buf);
     close(sockfd);
+	
+	clock_gettime(CLOCK_REALTIME, &requestEnd);
+
+	// Calculate time it took
+	double accum = ( requestEnd.tv_sec - requestStart.tv_sec )
+	+ ( requestEnd.tv_nsec - requestStart.tv_nsec )
+	/ BILLION;
+	printf( "Time measured: %lf ms\n", accum*1000);
 
     return 0;
 }
