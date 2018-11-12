@@ -15,8 +15,4 @@ clean:
 	rm server
 
 	
-
-
-
-
-	
+ 
