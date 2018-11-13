@@ -54,9 +54,11 @@ DataItem_i *erstelle_element(uint16_t keylen ,uint16_t datalen)
 
 int set(DataItem_i* *hashArray,int SIZE,char * key,char * data ,uint16_t keylen ,uint16_t datalen )
 {
-
-   
-
+ 
+    if (!key ||!data)
+    {
+      perror("key or value can not be empty");
+    }
 
    //get the hash 
    int hashIndex = hashCode(key,keylen,SIZE);

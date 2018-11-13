@@ -105,12 +105,14 @@ if (args[1]== NULL)
       printf("cant  accept  connection Server  ") ;
       exit(1);
       }
-
+    
 
    
      bzero(Buffer,10000) ;
     int bytes = recv(CS,Buffer,10000,0) ; 
+   
     
+   
     int x = 1 ;
     
     int  index5 = 0 ;   // for get 
@@ -122,22 +124,27 @@ if (args[1]== NULL)
     index6 = Buffer[0]  & (x << 1 ) ;  // get 1 bite if set to one index6 will be 2
     index7 = Buffer[0]  & x   ;   // get 1 bite if set to one index7 will be 1
   //  printf("%d\n",index7 );
-   
-    char tid = Buffer[1];
+    
+
 
      
     uint16_t   keylen= Buffer[3] + (Buffer[2] <<8 );         // copying the key  len
     uint16_t   datalen = Buffer[5] + (Buffer[4] <<8 );       // copying the data  len
 
-   
+    
     int i = bytes ;
+    // printf("sicher1\n");
      
-    while(bytes>0)
-    {
-       bytes = recv(CS,&Buffer[i],10000,0) ;               
-       i += bytes;       
-}
-   // fwrite(Buffer,1,i,stdout) ;
+    // while(bytes>0)
+    // {
+    //    bytes = recv(CS,&Buffer[i],10000,0) ;               
+    //    i += bytes;         
+    // }
+    
+    
+    char tid = Buffer[1];
+     
+     
 
     
     char* key= NULL ;
@@ -158,7 +165,7 @@ if (args[1]== NULL)
     answer[0]= 8;  // set akn
 
 //TODO change back to tid 
-
+    
 
     answer[1]=tid ;  // set id
     int answersize = 6 ;  // only
@@ -166,6 +173,8 @@ if (args[1]== NULL)
     
     if (index5)
     {
+
+
       DataItem_i *requested = get(hashArray,HASHSIZE,keydebugguing , keylen  );
        if( !requested )
        {
@@ -186,11 +195,15 @@ if (args[1]== NULL)
          answersize+=  requested->keylen ;
          answersize+=   requested->datalen ;
         }
+        printf("%s  and  %d \n",keydebugguing,keylen );
 
 
     } 
     else if (index6)
     {
+
+      printf("%s  and  %d \n",keydebugguing,keylen );
+       
       int r = set(hashArray,HASHSIZE,keydebugguing,data , keylen ,datalen ) ;
       if(r == -1)
       {
@@ -214,7 +227,13 @@ if (args[1]== NULL)
 
     }      
     else if (index7)
-    {
+    {   
+      //   for (int x = 0; x < i; ++x)
+      // {
+      //   printf("sicher1 ,   i ist  %d and  %c  \n",x,Buffer[x]);
+      // }
+
+      printf("%s  and  %d \n",keydebugguing,keylen );
       if(delete(hashArray,HASHSIZE,keydebugguing, keylen  ) == -1)
            perror("(delete )could not find the item to delete")   ;
       else
@@ -224,13 +243,13 @@ if (args[1]== NULL)
     }
    
 
-   fwrite(answer,1,answersize,stdout) ;
+   // fwrite(answer,1,answersize,stdout) ;
    //      printf("%d\n",(int) strlen(answer));
 
     
 // for (int x = 0; x < answersize; ++x)
 //  {
-//     printf("%d and %c \n",x, answer[x]);
+//     printf("%d and %d \n",x, answer[x]);
 //  } 
 
    int bytesent = send(CS,answer,answersize,0);
@@ -276,4 +295,3 @@ if (args[1]== NULL)
 
 
 }
-
