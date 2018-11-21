@@ -19,6 +19,7 @@
 #include <string.h> 
 #include <ctype.h>
 #include <time.h>
+#include <sys/select.h>
 
 
 
@@ -56,7 +57,7 @@ int main(int argc, char** args)
 	
 	int CS ; // client socket
 
-	CS = socket(PF_INET,SOCK_STREAM,0);  // creating client socket 
+	CS = socket(PF_INET,SOCK_STREAM | SOCK_NONBLOCK,0);  // creating client socket 
 	if(CS<0)
 		perror("cant make client socket") ;
 
@@ -153,11 +154,12 @@ int main(int argc, char** args)
 
    
 
-   time_t timer = 120;  // in seconds 
-   time_t start = time(NULL);
-   time_t end = start + timer;
-
-
+   // time_t timer = 2;  // in seconds 
+   // time_t start = time(NULL);
+   // time_t end = start + timer;
+	int timer = 2; /* 10ms */
+	clock_t start = clock();
+    
    while(1)
    {
 
@@ -171,7 +173,7 @@ int main(int argc, char** args)
 	    }
 			
 
-
+	     sleep(0.2); // give some time to recive 
 
 	    // bzero(text,10000);
 
@@ -186,7 +188,10 @@ int main(int argc, char** args)
 	    	printf("answer is ,   i ist  %d and  %d  \n",i,text[i]);
 	    }
 
-	    if (bytes > 0 || start>= end)  // break timer 
+ 		 clock_t d = clock() - start;
+ 		 d = d / CLOCKS_PER_SEC;
+         
+	    if (bytes > 0||  d >= timer )  // break timer 
 	    {
 	    	break ;
 	    }
