@@ -109,7 +109,7 @@ if (args[1]== NULL)
 
    
      bzero(Buffer,10000) ;
-    int bytes = recv(CS,Buffer,10000,0) ; 
+    recv(CS,Buffer,10000,0) ; 
    
     
    
@@ -132,7 +132,7 @@ if (args[1]== NULL)
     uint16_t   datalen = Buffer[5] + (Buffer[4] <<8 );       // copying the data  len
 
     
-    int i = bytes ;
+    // int i = bytes ;
     // printf("sicher1\n");
      
     // while(bytes>0)
@@ -185,10 +185,10 @@ if (args[1]== NULL)
          printf("retrived value succefully\n" );
          answer[0]= 12;  // set get and akn
          
-         answer[2]=  requested->keylen   & 0xFF ;// set last 8 bits to 0
-         answer[3]= (requested->keylen >> 8  & 0xFF);            
-         answer[4]=  requested->datalen  & 0xFF;   //set last 8 bits to 0
-         answer[5]= (requested->datalen >> 8)  & 0xFF;  
+         answer[2]= ( requested->keylen ) >> 8    & 0xFF ;// set last 8 bits to 0
+         answer[3]= (requested->keylen & 0xFF);            
+         answer[4]= ( requested->datalen >> 8) & 0xFF;   //set last 8 bits to 0
+         answer[5]= (requested->datalen )  & 0xFF;  
 
          strncpy( &answer[6], requested->key, requested->keylen );
          memcpy( &answer[6+requested->keylen ], requested->data, requested->datalen );
