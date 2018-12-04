@@ -168,6 +168,10 @@ if (args[1]== NULL)
     
 
     answer[1]=tid ;  // set id
+    answer[2]=0 ;  // set key len 
+    answer[3]=0 ;  // set  key len 
+    answer[4]=0 ;  // set  value  len 
+    answer[5]=0;  // set value  len 
     int answersize = 6 ;  // only
     
     
@@ -185,10 +189,10 @@ if (args[1]== NULL)
          printf("retrived value succefully\n" );
          answer[0]= 12;  // set get and akn
          
-         answer[2]= ( requested->keylen ) >> 8    & 0xFF ;// set last 8 bits to 0
-         answer[3]= (requested->keylen & 0xFF);            
-         answer[4]= ( requested->datalen >> 8) & 0xFF;   //set last 8 bits to 0
-         answer[5]= (requested->datalen )  & 0xFF;  
+         answer[2]=  (requested->keylen >> 8 )  & 0xFF ;// set last 8 bits to 0
+         answer[3]= (requested->keylen  & 0xFF);            
+         answer[4]= (requested->datalen >> 8)  & 0xFF;  
+         answer[5]=  requested->datalen  & 0xFF;   //set last 8 bits to 0
 
          strncpy( &answer[6], requested->key, requested->keylen );
          memcpy( &answer[6+requested->keylen ], requested->data, requested->datalen );
