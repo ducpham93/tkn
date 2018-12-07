@@ -310,12 +310,12 @@ int main(int argc, char **args)
         exit(1);
     }
 
-    char *id_prev  = args[1];
-    // char *ip_prev  = args[2];
-    // char *port_prev  = args[3];
-    char *id_self = args[4];
-    char *ip__self = args[5];
-    char *port_self  = args[6]  ;
+    char *id_prev  = args[4];
+/*    char *ip_prev  = args[5];
+    char *port_prev  = args[6];
+*/  char *id_self = args[1];
+    char *ip__self = args[2];
+    char *port_self  = args[3]  ;
     char *id_next = args[7];
     char *ip_next  = args[8];
     char *port_next  = args[9]  ;
