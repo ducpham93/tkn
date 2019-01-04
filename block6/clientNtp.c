@@ -31,28 +31,34 @@ struct server
      char* link  ;
      double roundTripMax ;
      double roundTripMin ;
+     double delay ;
      double disprion;
 	 double rootDisprion ;
+	 double   OffSet ;
 	 int stratum   ;
 	 int reliableFlag ;
-	 double   OffSet ;
     
 };
 typedef struct server server_i;
 
-int getBestServer(server_i ** serverList)
+int getBestServer(server_i ** serverList,int serversCount)
 {
 	double mindisperion = DBL_MAX ; 
 	int bestIndex = 0; 
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < serversCount; ++i)
 	{	
+
+		serverList[i]->delay = serverList[i]->delay / 8;
+		serverList[i]->OffSet = serverList[i]->OffSet /  8;
+		serverList[i]->rootDisprion =serverList[i]->rootDisprion / 8;
 		double  currentdisperion =  (serverList[i]->roundTripMax - serverList[i]->roundTripMin) + serverList[i]->rootDisprion ;
 		if(currentdisperion< mindisperion )
 		{	
 			mindisperion= currentdisperion ;
 			bestIndex= i ; 
 		}
-
+		printf("%s  %f  % f  %f  %f\n",serverList[i]->link,
+			serverList[i]->rootDisprion,currentdisperion,serverList[i]->delay,serverList[i]->OffSet );
 		// printf("currentdisperionis %f \n",currentdisperion);
 		// printf("rootdisperion %f \n",serverList[i]->rootDisprion);
 
@@ -62,7 +68,7 @@ int getBestServer(server_i ** serverList)
 void parseSrverAnswer(char * serverAnswer, server_i * tmpServer ,double originalStampleResult ,double referenceStampleResult)
 {
  /*************** get T3 T4***************/
-;
+
 
 	unsigned long long  ReceiveStampleResultsec = (unsigned char)serverAnswer[32];
 	ReceiveStampleResultsec = ReceiveStampleResultsec <<8 ;
@@ -109,19 +115,20 @@ void parseSrverAnswer(char * serverAnswer, server_i * tmpServer ,double original
  /*************** calc offset , rtn and rootDisprion**************/
 	tmpServer->stratum =serverAnswer[1]; 
 	// calc root deisperion 
-	tmpServer->rootDisprion =(((unsigned char)serverAnswer[8] <<24)+ ((unsigned char)serverAnswer[9] <<16) 
+	tmpServer->rootDisprion +=(((unsigned char)serverAnswer[8] <<24)+ ((unsigned char)serverAnswer[9] <<16) 
 	 + ((unsigned char)serverAnswer[10] <<8) + (unsigned char)serverAnswer[11] ) ;
 	
 	double rtb = (  referenceStampleResult - originalStampleResult ) 	- ( TransmitStampleResult - ReceiveStampleResult   ) ;
 	// printf("round trip is  %f\n",rtb);
 
+		tmpServer->OffSet += ((ReceiveStampleResult - originalStampleResult ) + (TransmitStampleResult - referenceStampleResult ))/2 ;
+		tmpServer->delay += rtb ;
 
 	if( rtb > tmpServer->roundTripMax )
 		tmpServer->roundTripMax = rtb ;
 	if( rtb < tmpServer->roundTripMin )
 	{
 		tmpServer->roundTripMin = rtb ;
-		tmpServer->OffSet = ((ReceiveStampleResult - originalStampleResult ) + (TransmitStampleResult - referenceStampleResult ))/2 ;
 		// printf("offset is  %f\n",tmpServer->OffSet);
 	}
 
@@ -134,27 +141,23 @@ int main(int argc, char** args)
 /*
 	****************preparing serverList*****************
 */
+	server_i * serverlist[argc] ;
+	if (argc <1)
+	{
+ 		printf("plz insert alt least 3 servers\n");
+ 		exit(0);
+ 	}
 
+	for (int i = 0; i < argc-1; ++i)
+	{	
 
-	server_i * serverlist[3] ;
-
-	serverlist[0] = (server_i*) malloc(sizeof(server_i)*1);
-	serverlist[0]->link = "stratum2-4.NTP.TechFak.Uni-Bielefeld.DE"  ;
-	serverlist[0]->roundTripMax =  DBL_MIN ;
-	serverlist[0]->roundTripMin =  DBL_MAX ;
-	serverlist[0]->reliableFlag =  0;
-
-	serverlist[1] = (server_i*) malloc(sizeof(server_i)*1);
-	serverlist[1]->link = "ntp0.rrze.uni-erlangen.de"  ;
-	serverlist[1]->roundTripMax =  DBL_MIN ;
-	serverlist[1]->roundTripMin =  DBL_MAX  ;
-	serverlist[1]->reliableFlag =  0;
-	
-	serverlist[2] = (server_i*) malloc(sizeof(server_i)*1);
-	serverlist[2]->link = "time1.uni-paderborn.de" ; 
-	serverlist[2]->roundTripMax =  DBL_MIN ;
-	serverlist[2]->roundTripMin =  DBL_MAX ;
-	serverlist[2]->reliableFlag =  0;
+		serverlist[i] = (server_i*) malloc(sizeof(server_i)*1);
+		serverlist[i]->link=(char*)malloc(sizeof(char)*strlen(args[i+1])) ;
+		strncpy(serverlist[i]->link,args[i+1],strlen(args[i+1])) ;
+		serverlist[i]->roundTripMax =  DBL_MIN ;
+		serverlist[i]->roundTripMin =  DBL_MAX ;
+		serverlist[i]->reliableFlag =  0;
+	}
 
 
 /*
@@ -190,6 +193,7 @@ int main(int argc, char** args)
 	 	SA.sin_port = htons(123) ;
 		SA.sin_family = AF_INET ;
 
+ 		printf("safe1\n");
 	    struct hostent* info=gethostbyname(serverlist[i]->link);// turn domain to hexi 
 	    struct in_addr **listi;
 	    listi = (struct in_addr **) info->h_addr_list; //
@@ -201,8 +205,9 @@ int main(int argc, char** args)
 		struct timeval originalStample ,referenceStample;
 
 		//TODO : adjust BAck to 8
-		for (int j = 0; j < 4; ++j) // do 8 times to calculate best disperiona
+		for (int j = 0; j < 8; ++j) // do 8 times to calculate best disperiona
 		{
+ 			printf("safe2\n");
 			gettimeofday(&originalStample, NULL);
 			double originalStampleResult  = ( (double) originalStample.tv_sec) + ((double) (double) originalStample.tv_usec *1.0e-6 ) ;
 			// printf("originalStample %f\n", originalStampleResult);
@@ -237,7 +242,7 @@ int main(int argc, char** args)
 
 		close(CS);
 	}
-		int bestServerIndex = getBestServer(serverlist);
+		int bestServerIndex = getBestServer(serverlist,argc-1);
 		printf("bestServer to sychronize to  is %s\n", serverlist[bestServerIndex]->link);
 		/************printing real time************/
 		// geting sec 		
