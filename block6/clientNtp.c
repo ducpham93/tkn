@@ -177,7 +177,7 @@ int main(int argc, char** args)
 	{
 
 
-		int CS = socket(AF_INET,SOCK_DGRAM,0);  // creating client socket 
+		int CS = socket(AF_INET,SOCK_DGRAM | SOCK_NONBLOCK,0);  // creating client socket 
 		if(CS<0)
 			perror("cant make client socket") ;
 
@@ -219,11 +219,17 @@ int main(int argc, char** args)
 
 			int answerlen= 0;
 			int init = 0;
+			sleep(2);
+
 			while(answerlen< 48)
 			{	
 				answerlen += recvfrom(CS, serverAnswer, 48, 0, (struct sockaddr*) &SA, (socklen_t *)&init);
 				if( answerlen < 0 )  // recieiving für udp
+				{
 					printf("error recieiving\n");
+					j-- ; // decremante ii to tray again to get all the 8 messing points
+					break ;
+				}
 			}
 			// for (int x = 0; x < 48; ++x)
 		 //     {
