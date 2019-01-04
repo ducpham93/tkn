@@ -33,7 +33,11 @@ int hashCode( char * key, uint16_t len,int SIZE)
       key++ ;
         
     }
-      hash = hash % SIZE ;    
+      hash = hash % SIZE ;   
+       if (hash < 0)
+      hash *= -1 ;
+      // printf("hash of get is %d \n", hash);
+
     return hash;
 }
 
@@ -66,7 +70,7 @@ int set(DataItem_i* *hashArray,int SIZE,char * key,char * data ,uint16_t keylen 
    //move in array until an empty or deleted cell
    DataItem_i *searching = get(hashArray,SIZE,key, keylen);
  
-    
+
    
     
    // printf("%s\n",searching->data );
@@ -86,6 +90,7 @@ int set(DataItem_i* *hashArray,int SIZE,char * key,char * data ,uint16_t keylen 
     }
    int i = 0 ;
 
+
    while(hashArray[hashIndex] != NULL  &&  strcmp("deleted",hashArray[hashIndex]->key) ) 
    {
       //go to next cell
@@ -96,6 +101,7 @@ int set(DataItem_i* *hashArray,int SIZE,char * key,char * data ,uint16_t keylen 
       i++;
       if (i == SIZE)
         return -1 ;
+
    }
    if (hashArray[hashIndex])
    {
@@ -110,6 +116,7 @@ int set(DataItem_i* *hashArray,int SIZE,char * key,char * data ,uint16_t keylen 
           
 
        }
+
       free(hashArray[hashIndex]);
    }
 
@@ -119,7 +126,7 @@ int set(DataItem_i* *hashArray,int SIZE,char * key,char * data ,uint16_t keylen 
    strcpy(new->key,key);
    memcpy(new->data,data,datalen);
   
-   
+
   
    hashArray[hashIndex] = new;
    return 0 ;
@@ -138,7 +145,7 @@ DataItem_i *get(DataItem_i* *hashArray,int SIZE,char * key,uint16_t keylen)
   
     
    while(  hashArray[hashIndex] != NULL) 
-   {
+   {  
      
         if (hashArray[hashIndex]->keylen > keylen )   // addon for compare string to work right
             keylen = hashArray[hashIndex]->keylen ;
