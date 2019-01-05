@@ -1,4 +1,3 @@
-
 CC = gcc
 
 CFLAGS  = -g -Wall  -std=c99 
@@ -7,6 +6,16 @@ ARGS2 = 70 127.0.0.1 4070 10  127.0.0.1 4010  130 127.0.0.1 4130
 ARGS3 = 130 127.0.0.1 4130 70 127.0.0.1 4070  190 127.0.0.1 4190
 ARGS4 = 190 127.0.0.1 4190 130 127.0.0.1 4130  10 127.0.0.1 4010
 
+ARGSNORMAL0 = 127.0.0.1 8005 10 127.0.0.1 8004 60000 127.0.0.1 8001 5000
+ARGSNORMAL1 = 127.0.0.1 8001 5000 127.0.0.1 8005 10 127.0.0.1 8003 10000
+ARGSNORMAL2 = 127.0.0.1 8003 10000 127.0.0.1 8001 5000 127.0.0.1 8000 15000
+ARGSNORMAL3 = 127.0.0.1 8000 15000 127.0.0.1 8003 10000 127.0.0.1 8002 20000
+ARGSNORMAL4 = 127.0.0.1 8002 20000 127.0.0.1 8000 15000 127.0.0.1 8009 25000
+ARGSNORMAL5 = 127.0.0.1 8009 25000 127.0.0.1 8009 25000 127.0.0.1 8006 30000
+ARGSNORMAL6 = 127.0.0.1 8006 30000 127.0.0.1 8009 25000 127.0.0.1 8007 35000
+ARGSNORMAL7 = 127.0.0.1 8007 35000 127.0.0.1 8006 30000 127.0.0.1 8008 50000
+ARGSNORMAL8 = 127.0.0.1 8008 50000 127.0.0.1 8007 35000 127.0.0.1 8004 60000
+ARGSNORMAL9 = 127.0.0.1 8004 60000 127.0.0.1 8008 50000 127.0.0.1 8005 10
 
 # ARGS1 = 10 127.0.0.1 4010 130 127.0.0.1 4130  70 127.0.0.1 4070
 # ARGS2 = 70 127.0.0.1 4070 10  127.0.0.1 4010  130 127.0.0.1 4130
@@ -80,6 +89,28 @@ runget: client
 
 
 
+runnormal0: peer 
+	./peer  ${ARGSNORMAL0}
+runnormal1: peer 
+	./peer  ${ARGSNORMAL1}
+runnormal2: peer 
+	./peer  ${ARGSNORMAL2}
+runnormal3: peer 
+	./peer  ${ARGSNORMAL3}
+runnormal4: peer 
+	./peer  ${ARGSNORMAL4}
+runnormal5: peer 
+	./peer  ${ARGSNORMAL5}
+runnormal6: peer 
+	./peer  ${ARGSNORMAL6}
+runnormal7: peer 
+	./peer  ${ARGSNORMAL7}
+runnormal8: peer 
+	./peer  ${ARGSNORMAL8}
+runnormal9: peer 
+	./peer  ${ARGSNORMAL9}
+
+runnormalall: runnormal0 runnormal1 runnormal2 runnormal3 runnormal4 runnormal5 runnormal6 runnormal7 runnormal8 runnormal9
 
 rundelete: client 
 	./client  ${ARGSDELETE}
@@ -127,10 +158,3 @@ runjoin10: peer
 clean:
 	rm peer
 	rm client
-
-	
-
-
-
-
-	
