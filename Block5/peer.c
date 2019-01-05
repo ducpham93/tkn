@@ -35,7 +35,7 @@
 #define HASHSIZE 65536
 #define DHTSIZE 65536
 #define CLIENTSSIZE 65536
-#define USE_FINGERTABLES  1 // yes == 0
+#define USE_FINGERTABLES 1// yes == 0
 
 #define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
 
@@ -86,7 +86,7 @@ int hashingclient( char *key, uint16_t len, int SIZE, char *id_prev, char *id_se
     else if (flag== 1)     // if it is a fake get request then just write the key inside 
     {
     	hash = ( (unsigned char) key[14] <<8)+  (unsigned char) key[15];
-    	printf("it is a fake get to hash id %d and the requesting id is : %d \n",hash, ( ((unsigned char) key[6] <<8)+  (unsigned char) key[7]) );
+    //	printf("it is a fake get to hash id %d and the requesting id is : %d \n",hash, ( ((unsigned char) key[6] <<8)+  (unsigned char) key[7]) );
     	
     }
     // printf("(hashs is  %d   and flagis %d )\n",hash,flag);
@@ -258,7 +258,7 @@ int handle_client(char *Buffer, char *answer, char *id_self,
         {
             answer[0] = 12; // set get and akn
 
-            printf("(get )key not found ")   ;
+            //printf("(get )key not found ")   ;
             if (keylen == 3 && Buffer[16] == -1)
             {
             	answer[14] = Buffer[14];
@@ -632,8 +632,7 @@ void  update_Finger_Table(FingerItem_i** FingerTable,char *Buffer,char * id_self
 	    	 FingerTable[i]->respon_Node_ip[3] = x  ;
 	    	 FingerTable[i]->respon_Node_port[0] = atoi(port_next) >> 8 ;
 	    	 FingerTable[i]->respon_Node_port[1] = atoi(port_next)  ;
-	    	 printf("puting in index %d thestart %d id %s  and id self is %s \n",i
-	    	 	,FingerTable[i]->start,id_next,id_self);
+	    	 //printf("puting in index %d thestart %d id %s  and id self is %s \n",i,FingerTable[i]->start,id_next,id_self);
 	    } 
 	}
 	// printf("breaked out \n");
@@ -671,8 +670,7 @@ void  update_Finger_Table(FingerItem_i** FingerTable,char *Buffer,char * id_self
 
 
 
-	     printf("sending for index %d with the start value %d a fake request \n",i
-	    	 	,FingerTable[i]->start);
+	     //printf("sending for index %d with the start value %d a fake request \n",i,FingerTable[i]->start);
 
 
 		send_to_next_node(text, 21, ip_next,  port_next,0); // 14 + 3 extra 0 7 
@@ -813,6 +811,9 @@ int main(int argc, char **args)
 	    strcpy(id_next , args[7]);
 	    strcpy(ip_next  , args[8]);
 	    strcpy(port_next , args[9])  ;
+        Flag_case= 2 ;
+        printf("it is case 2 \n");
+
 
     }
 
@@ -932,6 +933,7 @@ int main(int argc, char **args)
 
  //    int Build_FingerTable_timer = ; /* 10ms */
 	// clock_t start = clock();
+
     int flag_FingerTable_updated = -1;
 	// int Build_FingerTable_timer = 30; /* 10ms */
 	// clock_t start = clock();
@@ -964,9 +966,12 @@ int main(int argc, char **args)
             stablize_massage[7] = x ;
             stablize_massage[8] =  atoi(port_self) >> 8 ;
             stablize_massage[9] =  atoi(port_self) ;
+            if (Flag_case != 2 )
+            {
             printf("node %s is sending stabalize massage to node %s with ip %s and port %s id prev is %s and id next is %s \n",
-            	id_self,id_next,ip_next,port_next,id_prev,id_next );
-            send_to_next_node(stablize_massage, 10, ip_next, port_next,0);
+                id_self,id_next,ip_next,port_next,id_prev,id_next );
+                send_to_next_node(stablize_massage, 10, ip_next, port_next,0);
+            }
             sleep(2); //give time to response
         }
         // printf("flagcase is == %d && flag wait_for_join_Answer == %d  \n",Flag_case,wait_for_join_Answer );
@@ -1269,7 +1274,7 @@ int main(int argc, char **args)
 	                            	int hashed_key  =( (unsigned char) Buffer[14] <<8)+  (unsigned char)Buffer[15];
 	                            	int index = ( (unsigned char) Buffer[17] <<8)+  (unsigned char)Buffer[18] ;// caclulating star
 	                            	int responsiple_id  = ( (unsigned char) Buffer[19] <<8)+  (unsigned char)Buffer[20] ;// caclulating star
-	                            	int new_id  = ( (unsigned char) Buffer[6] <<8)+  (unsigned char)Buffer[7] ;// caclulating star
+	                            //	int new_id  = ( (unsigned char) Buffer[6] <<8)+  (unsigned char)Buffer[7] ;// caclulating star
 		                            // printf("safe3 hash key %d is and index is%d  and index start is %d and responsiple id is %d \n",
 		                            // 	hashed_key,index,FingerTable[index]->start ,responsiple_id);
 
@@ -1286,8 +1291,8 @@ int main(int argc, char **args)
 		                            	FingerTable[index]->respon_Node_ip[3]= Buffer[11]  ;
 		    	 						FingerTable[index]->respon_Node_port[0]= Buffer[12] ;
 		    	 						FingerTable[index]->respon_Node_port[1]= Buffer[13] ;
-	    	                            printf("got answer for fake massage node %d is updating finger table index  %d iwth id %d and respinisple id is   %d \n",
-	    	                            atoi(id_self),index,new_id,responsiple_id);  
+	    	                           // printf("got answer for fake massage node %d is updating finger table index  %d iwth id %d and respinisple id is   %d \n",
+	    	                            //atoi(id_self),index,new_id,responsiple_id);  
 		      	  //                       for (int i = 0; i < 16 ; ++i)
 			        //                     {
 		    	    //                         int rsponse_Nodey =   ( (unsigned char) FingerTable[i]->respon_Node[0] <<8)+  (unsigned char)FingerTable[i]->respon_Node[1] ;
