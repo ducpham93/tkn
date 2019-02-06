@@ -193,37 +193,46 @@ int main(int argc, char** argv) {
      * - writeBuffer(FILE*, GoBackNMessageStruct*)
      * - sendAck(int, GoBackNMessageStruct*, long)
      */
+    int flag = -1 ;
     if ( crcValid == true  )
     { if ( data->seqNo == lastReceivedSeqNo +1 )  
       {
         lastReceivedSeqNo = data->seqNo;
-        sendAck(s, data, lastReceivedSeqNo );
+        sendAck(s, data, lastReceivedSeqNo + 1 );
         writeBuffer(output, data);
         goodBytes = goodBytes + (data->size - sizeof(*data)) ;
       }
       else if(  data->seqNo >  lastReceivedSeqNo +1 )
       {
         sendAck(s, NULL, lastReceivedSeqNo + 1);
+        flag = 0 ;
 
       }
-      // else if ( data->seqNo lastReceivedSeqNo +1 )
-      // {
-      //   /* code */
-      // }
+      else if ( data->seqNo<lastReceivedSeqNo + 1  )
+      {
+        flag = 0 ;
+      }
         
     }
     else if (crcValid == false)
     {
          sendAck(s, NULL, lastReceivedSeqNo + 1);
-    }
+         flag = 0 ;
 
-    if ((data->size == sizeof(*data)))
+    }
+    if (flag == 0) continue ;
+
+    if (data->size == sizeof(*data) )
     {
     
      fclose(output) ;
      fprintf( stdout, "GB %ld , TB %ld\n" ,goodBytes,totalBytes);
-     break ;
+
+     break;
     }
+
+    
+    
 
     /* END YOUR TASK */
     freeGoBackNMessageStruct(data);
